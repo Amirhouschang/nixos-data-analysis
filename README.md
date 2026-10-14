@@ -11,7 +11,7 @@ One file, `configuration.nix`, installs and configures everything.
 - My daily system is Arch Linux (EndeavourOS). I run this setup as a virtual machine on the same laptop with QEMU/KVM and virt-manager.
 - Emergency backup: if my Arch system breaks, I can rebuild my programs and services from this one file in about an hour. Personal files, databases, passwords and AI models are not included. They need their own backup.
 - I still like NixOS because it is reproducible. The same file rebuilds the same programs and services on another machine. Package versions can be different, because this config does not pin the Nixpkgs version.
-- This is useful for people with little Linux experience. If you trust someone's configuration, you do not have to set up everything yourself.
+- This is useful for people with little Linux experience. If you trust someone's configuration, you do not have to set up everything yourself. But I recommend reading about NixOS or watching some videos first. Do not use other people's configurations blindly, especially if you do not use a VM.
 
 ## What's included
 
