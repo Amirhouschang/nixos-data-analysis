@@ -90,7 +90,7 @@ sudo reboot
 
 ### 5. SSH: work from the host terminal
 
-With Plasma on Wayland, copy and paste between host and VM does not work. The Spice clipboard agent only supports X11.
+In my VM with NixOS 26.05 and Plasma, copy and paste between host and VM window does not work. I also tried the X11 session, but it did not work there either. With NixOS 25.05 on X11 it worked.
 My solution: I use the VM from my normal host terminal with SSH. Copy and paste works there.
 Password login is disabled, so the key goes through the shared folder.
 
@@ -190,7 +190,7 @@ Do not change `system.stateVersion`.
 
 ## Known limitations
 
-- No copy and paste between host and VM window on Wayland. Use SSH (step 5).
+- No copy and paste between host and VM window (NixOS 26.05, Wayland and X11). Use SSH (step 5).
 - virt-manager shows only one screen per window.
 - No GPU inside the VM, so AI models run on the host.
 - Not included yet: `country-converter` (not in Nixpkgs), `llama-index`, `playwright` (planned in a separate Python environment), Superset (planned with Docker, as a Power BI replacement), KNIME.
