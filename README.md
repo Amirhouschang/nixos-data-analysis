@@ -128,6 +128,7 @@ sudo firewall-cmd --zone=libvirt --add-port=11434/tcp --permanent && sudo firewa
 
 - My Ollama comes from the official install script and my models are in `~/.ollama/models`. So I also added `User=amir` and `Group=amir` to the override file.
 - Other installations (for example the Arch package) can use another model folder and block access to `/home`. Then `User=` alone is not enough. Check your service with `systemctl cat ollama` first.
+- My GPU is integrated (AMD Radeon 890M). Ollama ignores integrated GPUs by default, so I also added `Environment="OLLAMA_IGPU_ENABLE=1"` to the override file. Check with `ollama ps`: the column PROCESSOR must show GPU, not CPU.
 - The firewall rule opens the port only for the VM network.
 
 Test in the VM:
