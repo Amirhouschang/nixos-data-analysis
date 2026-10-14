@@ -1,4 +1,4 @@
-# WARNING: Do not use this configuration blindly – check every tool yourself before you adopt it.
+# WARNING: Do not use this configuration blindly. Check every tool yourself before you adopt it.
 
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
