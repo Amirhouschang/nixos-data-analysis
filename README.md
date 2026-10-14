@@ -190,5 +190,3 @@ Do not change `system.stateVersion`.
 ---
 
 Built with AI assistance. How I use AI in my work: [local-ai-workflow](https://github.com/Amirhouschang/local-ai-workflow)
-
-© 2026 Amirhoushang Rahmannejad. All rights reserved.
