@@ -30,7 +30,7 @@ One file, `configuration.nix`, installs and configures everything.
 | Value in `configuration.nix` | Meaning |
 |---|---|
 | `amir` | user name (also PostgreSQL user and database) |
-| `/dev/vda` | virtual disk of the VM (bootloader) |
+| `boot.loader.grub` lines | GRUB on `/dev/vda` for a VM with BIOS firmware. With UEFI keep the bootloader lines from your own generated `configuration.nix`. |
 | `192.168.122.1` | the host, seen from the VM (default libvirt network) |
 | `/home/amir/share` | shared folder with the host |
 | `system.stateVersion` | the NixOS version you installed first. Never change it later. |
@@ -48,6 +48,10 @@ sudo usermod -aG libvirt $USER     # then log out and in again
 lsmod | grep kvm                   # must show kvm_amd or kvm_intel
 ```
 
+This guide also expects on the host:
+- Ollama already installed and running (only needed for step 6)
+- firewalld running (default on EndeavourOS). On plain Arch: `sudo pacman -S firewalld && sudo systemctl enable --now firewalld`
+
 ### 2. Create the VM
 
 ```bash
@@ -57,7 +61,8 @@ mkdir -p ~/Dokumente/share         # shared folder on the host
 ```
 
 In virt-manager create a new VM with the ISO: 16 GB RAM, 8 CPUs, 150 GB disk.
-My first VM had 60 GB and that was too small, because updates need twice the space for a short time.
+My first VM had 60 GB and that was too small, because during an update the old and the new packages are on the disk at the same time.
+I used BIOS firmware (the virt-manager default on my system). The bootloader lines in `configuration.nix` only fit BIOS.
 Tick "Customize configuration before install" and change:
 
 - Memory: enable shared memory
@@ -108,7 +113,7 @@ printf 'Host nixos\n  HostName 192.168.122.23\n  User amir\n' >> ~/.ssh/config
 ssh nixos                                     # from now on without password
 ```
 
-The VM is only reachable from the host (private virtual network), not from your Wi-Fi or the internet. Leave with `exit`.
+With the default libvirt NAT network the VM is reachable from the host and from other VMs in the same virtual network, but not from your Wi-Fi or the internet. Leave with `exit`.
 
 ### 6. Ollama: use the models and GPU of the host
 
@@ -121,7 +126,8 @@ sudo systemctl daemon-reload && sudo systemctl restart ollama
 sudo firewall-cmd --zone=libvirt --add-port=11434/tcp --permanent && sudo firewall-cmd --reload
 ```
 
-- If your models are in `~/.ollama/models`, add `User=yourname` and `Group=yourname` to the override file.
+- My Ollama comes from the official install script and my models are in `~/.ollama/models`. So I also added `User=amir` and `Group=amir` to the override file.
+- Other installations (for example the Arch package) can use another model folder and block access to `/home`. Then `User=` alone is not enough. Check your service with `systemctl cat ollama` first.
 - The firewall rule opens the port only for the VM network.
 
 Test in the VM:
@@ -147,8 +153,10 @@ Without a host from step 6, Ollama must run on NixOS itself. In `configuration.n
 - Remove the line `environment.variables.OLLAMA_HOST = …` and the line `OLLAMA_BASE_URL = …`
 - Remove the parts only for the VM: `spice-vdagentd`, `qemuGuest` and the `fileSystems."/home/amir/share"` block
 - Enable the prepared block "Local AI without a host" (remove the `#`) and choose the package for your graphics card: `ollama-rocm` (AMD) or `ollama-cuda` (NVIDIA)
+- NVIDIA also needs a working NVIDIA driver setup. It is not part of this file.
+- Keep the bootloader lines from your own generated `configuration.nix`.
 
-Open WebUI then uses the local Ollama automatically.
+If Open WebUI was already used before, it can keep the old connection. Then change the Ollama connection in the Open WebUI admin settings to `http://localhost:11434`.
 
 ---
 
@@ -167,6 +175,7 @@ Add a package: search the name on [search.nixos.org](https://search.nixos.org), 
 If a rebuild fails, the end of the output shows the reason. For example `undefined variable` means a wrong name.
 
 New NixOS release: every May and November. 26.05 gets updates until 31.12.2026.
+Run these commands only after NixOS 26.11 is released.
 ```bash
 sudo nix-collect-garbage -d
 sudo nix-channel --add https://channels.nixos.org/nixos-26.11 nixos
